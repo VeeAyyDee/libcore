@@ -1,0 +1,8 @@
+Real SDK target build feedback: the hook's
+idf_component_get_property(... libcore BINARY_DIR) resolves to the application
+build directory, producing a nonexistent build-source/libcore.a. Use
+get_target_property(binary_dir ${component_target} BINARY_DIR), which returns
+the actual esp-idf/libcore directory. Component target itself is obtained using
+idf_component_get_property(... libcore COMPONENT_LIB). OUTPUT_NAME is core.
+Fresh host-vs-original instruction comparisons now pass 12 scenarios /65 calls.
+No runtime C changes requested by this feedback.

@@ -1,0 +1,65 @@
+{
+  "status": "pass",
+  "library": "libcore",
+  "license": "MPL-2.0 new files; Apache-2.0 public SDK interface reference",
+  "target": "ESP32-S3 / ESP-IDF 6.0.3",
+  "independent_host_comparison": {
+    "scenarios": 12,
+    "calls": 65,
+    "receipt_sha256": "d232f81efbbb11fce34be4a7752df0fd81c962e681751e97ef9a17c3278205c6",
+    "scope": "Original ISA interpreted with mocked external OS calls vs native compiled clean C. Compare returns, all 60 live record bytes, allocation/NVS/free call order and arguments. Serialized valid lifecycle; deliberate invalid-usage safety changes excluded. Hardware validation separate."
+  },
+  "hardware": {
+    "boots": [
+      {
+        "variant": "reference",
+        "boot": "cold",
+        "checks": 30
+      },
+      {
+        "variant": "reference",
+        "boot": "warm",
+        "checks": 32
+      },
+      {
+        "variant": "source",
+        "boot": "cold",
+        "checks": 30
+      },
+      {
+        "variant": "source",
+        "boot": "warm",
+        "checks": 32
+      }
+    ],
+    "checks": 124,
+    "failures": 0,
+    "cold_blank_nvs": true,
+    "warm_calibration_reused": true,
+    "calibration_bytes": 1904,
+    "passive_scan_beacons_received": true,
+    "wifi_restore_preserves_calibration": true,
+    "original_full_flash_restored_verified": true,
+    "restored_boot_reset_rc": 0,
+    "trial_receipt_sha256": "15e473b79afb761d4a7098689c3c843f82ea3069c72ed4310933f89446e374fd"
+  },
+  "abi": {
+    "four_required_functions": true,
+    "four_required_data_names_and_sizes": true,
+    "vendor_core_absent_from_replacement_map": true,
+    "replacement_archive_sha256": "2425d351ed226e5e6df76c5e31a39af7d47037ec85811d9bf2b6aafbfc64bebc"
+  },
+  "license_finalization": "Only SPDX comments changed in tested runtime C after hardware; exact tested source retained separately. No functional code change.",
+  "limitations": [
+    "Serialized SDK lifecycle only; no concurrency proof",
+    "Intentional safer invalid-usage behavior documented",
+    "Remaining vendor radio archives and chip ROM still required",
+    "Bounded tests, not every input, firmware version or radio condition"
+  ],
+  "sdk_example": {
+    "build": "pass",
+    "replacement_linked": true,
+    "flashed": false,
+    "elf_sha256": "5acf8e0c5bce1bf183127fd04d0ab56ddf0bc03f62f283c973020f8b615b6253"
+  }
+}

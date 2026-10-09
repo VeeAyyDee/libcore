@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "project": "Original readable libcore replacement",
+  "revision": "cleanroom-libcore-implementation-01",
+  "license_original_work": "MPL-2.0",
+  "target_contract": {
+    "chip": "ESP32-S3",
+    "sdk": "ESP-IDF 6.0.3"
+  },
+  "implementation_inputs": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "f33df25db120e5b8888c63f0c857c262d4d1dfd38f0d4111134c06f26ae6f984"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "38c68168db39067adfaf01751b5e2b3255a4a69184c727d9f312179b22eebcbf"
+    },
+    {
+      "path": "spec/IMPLEMENTATION-01.txt",
+      "sha256": "b8b85d2dce638b70cadcc28be70b94ce88bbbddf88efddc96584cd6329a85d0e"
+    },
+    {
+      "path": "spec/IMPLEMENTATION-02.txt",
+      "sha256": "bad1ef18e4e742c58fe576ed2925702e43fd65777863cb6c2a894dd384fe6ab4"
+    },
+    {
+      "path": "spec/SUPERVISOR-FEEDBACK-02.txt",
+      "sha256": "7c187669f664c2bfbae6abe7de084c50c3162f48790ac593a5ad5759fa0c7171"
+    },
+    {
+      "path": "spec/public-sdk/wifi_os_adapter.h",
+      "sha256": "e93ec24fe4729564e1eb5c36eb783d237152503562ffaf0bceb53e98988c6b87"
+    }
+  ],
+  "interface_license": {
+    "path": "spec/public-sdk/wifi_os_adapter.h",
+    "license": "Apache-2.0",
+    "modified": false
+  },
+  "input_notes": [
+    "IMPLEMENTATION-02.txt records the supervisor task-message clarification about closing nonzero handle output on an NVS open failure.",
+    "SUPERVISOR-FEEDBACK-02.txt records the SDK build API correction applied by the supervisor to the CMake hook.",
+    "Only these supervisor contracts, the supplied SDK interface, and standard host compiler/library/build interfaces informed the implementation."
+  ],
+  "isolation": {
+    "scope": "/home/vee/Desktop/s3 wifi/cleanroom-libs/libcore",
+    "vendor_binary_or_disassembly_read": false,
+    "reconstructed_source_read": false,
+    "network_access": false,
+    "hardware_access": false,
+    "private_test_read": false
+  },
+  "validation": {
+    "host_ctest": "2/2 passed",
+    "compiler": "GNU C 13.3.0",
+    "strict_warnings": true,
+    "asan": "passed",
+    "ubsan": "passed",
+    "lsan": "unavailable: ptrace sandbox; allocation ownership checked by mock",
+    "target_and_hardware": "Supervisor-owned independent validation, not performed by implementation agent"
+  },
+  "license_transition": {
+    "requested_by_user": "Distributed library fixes should be shared; apply file-level copyleft to new unreleased implementations",
+    "previous_private_draft": "0BSD",
+    "release": "MPL-2.0",
+    "runtime_change": "SPDX comment only; tested source snapshot retained by supervisor",
+    "historical_input_hashes": "implementation_inputs records implementation-time bytes; LICENSE and AGENTS.md changed afterward during release preparation",
+    "third_party": "Public SDK declaration remains unmodified Apache-2.0"
+  }
+}

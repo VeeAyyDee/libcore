@@ -1,0 +1,4 @@
+/build-host*/
+/example/build/
+/example/sdkconfig
+/example/sdkconfig.old

@@ -1,0 +1,66 @@
+Task: original readable replacement for ESP32-S3 ESP-IDF 6.0.3 libcore.a.
+This is a supervisor-written behavioral and ABI contract, not vendor code.
+Use only this tree. Do not inspect original/reconstructed implementations.
+
+The library manages a tiny Wi-Fi NVS lifecycle record, not the MAC or PHY.
+Externally visible functions:
+int misc_nvs_load(uint8_t mode);
+int misc_nvs_init(void);
+void misc_nvs_deinit(void);
+int misc_nvs_restore(void);
+Externally visible globals (target 32-bit pointers):
+g_misc_nvs: pointer, initially NULL, to a 60-byte owned record.
+g_log_mod: six zero-initialized uint32_t words (24 bytes).
+g_log_level: zero-initialized uint32_t (4 bytes).
+libcore_reversion_git: pointer to honest replacement revision string, not a
+vendor commit identifier. Target data symbol size is four bytes.
+
+Record: bytes 0..7 reserved, uint32 reset field at offset 8, opaque bytes 12..55,
+uint32 NVS handle at offset 56. Total 60. Preserve all opaque fields except at
+initial zero-allocation. No bit meanings are established for opaque fields.
+
+Platform: external wifi_osi_funcs_t *g_osi_funcs_p (public interface header
+provided). Operations: _malloc_internal(size_t), _free(void*),
+_nvs_open(const char*, unsigned int mode, uint32_t*), _nvs_close(uint32_t).
+Target offsets are 0x158, 0xb0, 0x124, 0x128 respectively. Compile-time assert
+these offsets using actual SDK header in the target build. Host tests use a
+small separate mock platform, not fake 32-bit offset pointer math.
+external g_wifi_menuconfig, word index 9 (byte36) nonzero enables NVS.
+No new external symbols that SDK must provide beyond these two globals.
+
+Successful lifecycle behavior:
+load(0) allocates 60 bytes, zeroes all of them, publishes the record. When NVS
+enabled, opens namespace "misc", read/write mode 1, stores handle at offset56.
+Returns 0 on success, 0x101 for allocation failure, exact NVS open error on
+failure. Nonzero load mode resets only the offset8 word and returns0, without
+allocation or NVS call. restore() is the same reset operation.
+init() guards against repeated initialization; repeated successful init returns
+0 without changing record or opening again. Failed init must free allocation,
+clear state and permit a later successful retry. deinit() closes a nonzero
+opened handle, frees record, clears pointer and init guard. Repeated deinit is
+safe. NVS disabled still allocates/zeroes record, without any NVS calls.
+
+Intentional safer handling outside valid lifecycle: restore/load(nonzero)
+before initialization should return 0x103 (invalid state), not dereference NULL.
+Repeated load(0) with an existing record should return invalid state, not leak.
+Treat acquisition as transactional; failed direct load(0) also leaves no leaked
+record. Track actually owned opened handles so disabling configuration after
+init does not leak the handle. Document these deviations explicitly. Preserve
+the record handle field during reset; consumers may read/write opaque fields.
+Normal SDK serialized lifecycle is supported; do not claim arbitrary concurrent
+or reentrant lifecycle safety. No printf/log ABI dependency is needed.
+
+Deliver: original C sources with small isolated IDF platform adapter; public
+export declaration header; host tests (success, disabled-NVS, allocation/open
+failures, retry, repeated init/deinit, reset preservation, invalid-state paths,
+configuration change ownership). Strict warnings + ASan/UBSan. IDF component
+name libcore, output archive libcore.a, REQUIRES esp_wifi. Version/target guard
+ESP-IDF6.0.3/S3. Build hook included AFTER app project() switches existing
+imported target esp_wifi_core IMPORTED_LOCATION to component archive. Obtain
+component with idf_component_get_property, BINARY_DIR and OUTPUT_NAME, not
+$<TARGET_FILE:...>. DO NOT add_dependencies between imported target and source
+component (SDK archive dependency graph cycles). Example must explicitly include
+component in REQUIRES or COMPONENTS; EXTRA_COMPONENT_DIRS alone is insufficient
+if app restricts COMPONENTS. No application API changes. README, 0BSD, third party
+notice, provenance hashes, minimal example, documented limitations. No claim
+of hardware success until supervisor supplies independently verified results.

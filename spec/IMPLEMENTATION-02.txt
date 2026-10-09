@@ -1,0 +1,4 @@
+Supervisor clarification delivered through task message during implementation:
+If NVS open fails but writes a nonzero handle, close that handle before freeing
+the temporary record. Return the exact open error, clear ownership, and permit
+retry. This supplements IMPLEMENTATION-01.txt's transactional acquisition rule.

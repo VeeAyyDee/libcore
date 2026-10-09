@@ -1,0 +1,4 @@
+Failure-cleanup clarification: if nvs_open returns an error but has written a
+nonzero handle to its output, init cleanup closes that handle before freeing
+the record. Apply the same leak-free behavior to transactional direct load(0).
+This is a behavioral contract clarification, not original implementation code.

@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: MPL-2.0
+# Include AFTER the application's project() call; libcore must be selected.
+if(NOT IDF_TARGET STREQUAL "esp32s3")
+    message(FATAL_ERROR "libcore replacement requires IDF_TARGET=esp32s3")
+endif()
+if(NOT TARGET esp_wifi_core)
+    message(FATAL_ERROR "Expected the SDK imported target esp_wifi_core")
+endif()
+get_target_property(_libcore_imported esp_wifi_core IMPORTED)
+if(NOT _libcore_imported)
+    message(FATAL_ERROR "esp_wifi_core must be an imported target")
+endif()
+idf_component_get_property(_libcore_target libcore COMPONENT_LIB)
+get_target_property(_libcore_binary_dir ${_libcore_target} BINARY_DIR)
+get_target_property(_libcore_output_name ${_libcore_target} OUTPUT_NAME)
+if(NOT _libcore_output_name)
+    message(FATAL_ERROR "libcore component must have an explicit OUTPUT_NAME")
+endif()
+set_property(TARGET esp_wifi_core PROPERTY IMPORTED_LOCATION
+             "${_libcore_binary_dir}/lib${_libcore_output_name}.a")
+# No imported-target dependency edge: IDF's archive graph can otherwise cycle.
+unset(_libcore_imported)
+unset(_libcore_target)
+unset(_libcore_binary_dir)
+unset(_libcore_output_name)
